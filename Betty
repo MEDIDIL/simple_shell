@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/*
+ * main()
+ *
+ * The main function of the shell.
+ */
+int main(int argc, char **argv) {
+  /*
+   * line is a pointer to the current line of input.
+   * line_len is the length of the current line of input.
+   */
+  char *line = NULL;
+  size_t line_len = 0;
+
+  /*
+   * Get the next line of input from the user.
+   */
+  while (getline(&line, &line_len, stdin) != -1) {
+    /*
+     * command is a pointer to the command on the current line.
+     * arg1, arg2, etc. are pointers to the arguments to the command.
+     */
+    char *command = strtok(line, " ");
+    char *arg1 = NULL;
+    char *arg2 = NULL;
+
+    /*
+     * If there is no command, continue to the next line.
+     */
+    if (command == NULL) {
+      continue;
+    }
+
+    /*
+     * Get the first argument to the command.
+     */
+    arg1 = strtok(NULL, " ");
+
+    /*
+     * Get the second argument to the command.
+     */
+    arg2 = strtok(NULL, " ");
+
+    /*
+     * If the command is "cd", change the current directory to the argument.
+     */
+    if (strcmp(command, "cd") == 0) {
+      if (arg1 != NULL) {
+        chdir(arg1);
+      } else {
+        fprintf(stderr, "cd: no directory specified\n");
+      }
+    } else if (strcmp(command, "pwd") == 0) {
+      /*
+       * If the command is "pwd", print the current working directory.
+       */
+      char cwd[1024];
+      getcwd(cwd, sizeof(cwd));
+      printf("%s\n", cwd);
+    } else if (strcmp(command, "exit") == 0) {
+      /*
+       * If the command is "exit", exit the shell.
+       */
+      exit(0);
+    } else {
+      /*
+       * If the command is unknown, print an error message.
+       */
+      printf("Unknown command: %s\n", command);
+    }
+  }
+
+  /*
+   * Free the memory allocated for the line.
+   */
+  free(line);
+
+  /*
+   * Return 0 to indicate success.
+   */
+  return 0;
+}
